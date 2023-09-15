@@ -27,6 +27,7 @@ def tetris():
     ]
     while True:
         new_piece = Piece(random.randint(1, 7))
+        aux_screen = copy.deepcopy(screen)
         screen = print_piece(screen, new_piece)
         print_screen(screen)
 
@@ -38,19 +39,19 @@ def tetris():
                 match event.name:
                     case "flecha abajo":
                         (screen, new_piece) = move_piece(
-                            screen, Movement.DOWN, new_piece
+                            screen, aux_screen, Movement.DOWN, new_piece
                         )
                     case "flecha izquierda":
                         (screen, new_piece) = move_piece(
-                            screen, Movement.LEFT, new_piece
+                            screen, aux_screen, Movement.LEFT, new_piece
                         )
                     case "flecha derecha":
                         (screen, new_piece) = move_piece(
-                            screen, Movement.RIGHT, new_piece
+                            screen, aux_screen, Movement.RIGHT, new_piece
                         )
                     case "space":
                         (screen, new_piece) = move_piece(
-                            screen, Movement.ROTATE, new_piece
+                            screen, aux_screen, Movement.ROTATE, new_piece
                         )
 
 
@@ -60,9 +61,11 @@ def print_piece(screen: list, piece: Piece):
     return screen
 
 
-def move_piece(screen: list, movement: Movement, piece: Piece) -> (list, Piece):
-    new_screen = [["⬜️"] * 10 for _ in range(10)]
-
+def move_piece(
+    screen: list, aux_screen: list, movement: Movement, piece: Piece
+) -> (list, Piece):
+    """new_screen = [["⬜️"] * 10 for _ in range(10)]"""
+    new_screen = copy.deepcopy(aux_screen)
     rotation_item = 0
 
     for row_index, row in enumerate(screen):
@@ -94,17 +97,28 @@ def move_piece(screen: list, movement: Movement, piece: Piece) -> (list, Piece):
                 if new_column_index > 9 or new_column_index < 0:
                     print("\nNo se puede realizar el movimiento")
                     return (screen, piece)
+                elif (
+                    not piece.floor
+                    and new_row_index > 9
+                    or aux_screen[new_row_index][new_column_index] == "🔳"
+                ):
+                    piece.floor = True
+                    return (bloquear_pieza(screen), piece)
                 else:
-                    if not piece.floor and new_row_index > 9:
-                        piece.floor = True
-                        return (screen, piece)
-
                     new_screen[new_row_index][new_column_index] = piece.color
 
     if movement == Movement.ROTATE:
         piece.piece_position = (piece.piece_position + 1) % 4
     print_screen(new_screen)
     return (new_screen, piece)
+
+
+def bloquear_pieza(screen: list):
+    for row_index, row in enumerate(screen):
+        for column_index, item in enumerate(row):
+            if item != "⬜️" and item != "🔳":
+                screen[row_index][column_index] = "🔳"
+    return screen
 
 
 def print_screen(screen: list):
