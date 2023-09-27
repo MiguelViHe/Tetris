@@ -12,10 +12,13 @@ class Movement(Enum):
     ROTATE = 4
 
 
-def print_piece(screen: list, piece: Piece) -> list:
+def print_piece(screen: list, piece: Piece) -> (list, Piece):
+    is_blocked = lambda item: item == "🔳"
     for position in piece.initial_position:
+        if is_blocked(screen[position[0]][position[1]]):
+            piece.floor = True
         screen[position[0]][position[1]] = piece.color
-    return screen
+    return (screen, piece)
 
 
 def print_screen(screen: list):
@@ -105,6 +108,7 @@ def move_piece(
 
 
 def tetris():
+    game_over = False
     screen = [
         ["⬜️", "⬜️", "⬜️", "⬜️", "⬜️", "⬜️", "⬜️", "⬜️", "⬜️", "⬜️"],
         ["⬜️", "⬜️", "⬜️", "⬜️", "⬜️", "⬜️", "⬜️", "⬜️", "⬜️", "⬜️"],
@@ -117,15 +121,19 @@ def tetris():
         ["⬜️", "⬜️", "⬜️", "⬜️", "⬜️", "⬜️", "⬜️", "⬜️", "⬜️", "⬜️"],
         ["⬜️", "⬜️", "⬜️", "⬜️", "⬜️", "⬜️", "⬜️", "⬜️", "⬜️", "⬜️"],
     ]
-    while True:
+
+    while not game_over:
         new_piece = Piece(random.randint(1, 7))
         aux_screen = copy.deepcopy(screen)
-        screen = print_piece(screen, new_piece)
+        (screen, new_piece) = print_piece(screen, new_piece)
+        if new_piece.floor == True:
+            game_over = True
         print_screen(screen)
 
         while new_piece.floor == False:
             event = keyboard.read_event()
             if event.name == "esc":
+                game_over = True
                 break
             elif event.event_type == keyboard.KEY_DOWN:
                 match event.name:
@@ -145,6 +153,7 @@ def tetris():
                         (screen, new_piece) = move_piece(
                             screen, aux_screen, Movement.ROTATE, new_piece
                         )
+    print("\nGAME OVER  ")
 
 
 tetris()
