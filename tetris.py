@@ -12,6 +12,9 @@ class Movement(Enum):
     ROTATE = 4
 
 
+SCORES = [0, 1, 1.25, 1.5, 1.75]
+
+
 def print_piece(screen: list, piece: Piece) -> (list, Piece):
     is_blocked = lambda item: item == "🔳"
     for position in piece.initial_position:
@@ -35,20 +38,26 @@ def block_piece(screen: list) -> list:
     return screen
 
 
-def clean_rows(screen: list) -> list:
+def clean_rows(screen: list) -> (list, int):
+    completed_rows = 0
     screen_cleaned = []
     block_elem = lambda element: element == "🔳"
     for row in screen:
         if all(block_elem(item) for item in row):
             screen_cleaned.insert(0, ["⬜️"] * 10)
+            completed_rows += 1
         else:
             screen_cleaned.append(row)
-    return screen_cleaned
+    return (screen_cleaned, completed_rows)
+
+
+def calculate_score(rows: int, score: int) -> int:
+    return rows * SCORES[rows] + score
 
 
 def move_piece(
-    screen: list, aux_screen: list, movement: Movement, piece: Piece
-) -> (list, Piece):
+    screen: list, aux_screen: list, movement: Movement, piece: Piece, score: int
+) -> (list, Piece, int):
     new_screen = copy.deepcopy(aux_screen)
     rotation_item = 0
 
@@ -87,7 +96,7 @@ def move_piece(
                     )
                 ):
                     print("\nNo se puede realizar el movimiento")
-                    return (screen, piece)
+                    return (screen, piece, score)
                 elif (
                     movement == Movement.DOWN
                     and not piece.floor
@@ -97,17 +106,20 @@ def move_piece(
                     )
                 ):
                     piece.floor = True
-                    return (clean_rows(block_piece(screen)), piece)
+                    (cleaned_scr, completed_rows) = clean_rows(block_piece(screen))
+                    return (cleaned_scr, piece, calculate_score(completed_rows, score))
                 else:
                     new_screen[new_row_index][new_column_index] = piece.color
 
     if movement == Movement.ROTATE:
         piece.piece_position = (piece.piece_position + 1) % 4
     print_screen(new_screen)
-    return (new_screen, piece)
+    print(f"Score = {score}")
+    return (new_screen, piece, score)
 
 
 def tetris():
+    score = 0
     game_over = False
     screen = [
         ["⬜️", "⬜️", "⬜️", "⬜️", "⬜️", "⬜️", "⬜️", "⬜️", "⬜️", "⬜️"],
@@ -129,6 +141,7 @@ def tetris():
         if new_piece.floor == True:
             game_over = True
         print_screen(screen)
+        print(f"Score = {score}")
 
         while new_piece.floor == False:
             event = keyboard.read_event()
@@ -138,22 +151,23 @@ def tetris():
             elif event.event_type == keyboard.KEY_DOWN:
                 match event.name:
                     case "flecha abajo":
-                        (screen, new_piece) = move_piece(
-                            screen, aux_screen, Movement.DOWN, new_piece
+                        (screen, new_piece, score) = move_piece(
+                            screen, aux_screen, Movement.DOWN, new_piece, score
                         )
                     case "flecha izquierda":
-                        (screen, new_piece) = move_piece(
-                            screen, aux_screen, Movement.LEFT, new_piece
+                        (screen, new_piece, score) = move_piece(
+                            screen, aux_screen, Movement.LEFT, new_piece, score
                         )
                     case "flecha derecha":
-                        (screen, new_piece) = move_piece(
-                            screen, aux_screen, Movement.RIGHT, new_piece
+                        (screen, new_piece, score) = move_piece(
+                            screen, aux_screen, Movement.RIGHT, new_piece, score
                         )
                     case "space":
-                        (screen, new_piece) = move_piece(
-                            screen, aux_screen, Movement.ROTATE, new_piece
+                        (screen, new_piece, score) = move_piece(
+                            screen, aux_screen, Movement.ROTATE, new_piece, score
                         )
-    print("\nGAME OVER  ")
+
+    print(f"\nGAME OVER -- Score = {score}")
 
 
 tetris()
