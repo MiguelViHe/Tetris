@@ -3,6 +3,7 @@ import keyboard
 import random
 import copy
 from pieces import Piece
+from persistence.repository.tetris_repository import TetrisRepository
 
 
 class Movement(Enum):
@@ -53,6 +54,20 @@ def clean_rows(screen: list) -> (list, int):
 
 def calculate_score(rows: int, score: int) -> int:
     return rows * SCORES[rows] + score
+
+
+def save_score(usuario: str, score: int):
+    managedb = TetrisRepository()
+    managedb.scoreRegister(usuario, score)
+
+
+def print_scores_table():
+    managedb = TetrisRepository()
+    list = managedb.getScores()
+    print("------ Scores ------")
+    for usuario, score in list:
+        print(f"{usuario}: {score}")
+    print("--------------------")
 
 
 def move_piece(
@@ -168,6 +183,9 @@ def tetris():
                         )
 
     print(f"\nGAME OVER -- Score = {score}")
+    usuario = input("Introduce tu nombre: ")
+    save_score(usuario, score)
+    print_scores_table()
 
 
 tetris()
