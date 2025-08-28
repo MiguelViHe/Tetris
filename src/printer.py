@@ -1,5 +1,6 @@
 from typing import Any
 from persistence.repository.tetris_repository import TetrisRepository
+from src.speed import calc_speed
 
 def draw_screen(stdscr: Any, screen: Any, score: int) -> None:
 	stdscr.clear()  # limpia toda la pantalla
@@ -7,6 +8,7 @@ def draw_screen(stdscr: Any, screen: Any, score: int) -> None:
 	for i, row in enumerate(screen):
 		stdscr.addstr(i + 1, 0, "".join(row))
 	stdscr.addstr(len(screen) + 2, 0, f"Score = {score}")
+	stdscr.addstr(len(screen) + 3, 0, f"Speed = {calc_speed(score):.1f} seg")
 	stdscr.refresh()  # refresca la pantalla para mostrar los cambios
 
 def print_scores_table(stdscr: Any) -> int:

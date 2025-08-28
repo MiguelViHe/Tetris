@@ -3,6 +3,7 @@ from enum import Enum
 from src.pieces import Piece
 from src.printer import draw_screen
 from src.score import calculate_score
+from src.constants import BOARD_WIDTH, BOARD_HEIGHT
 import copy
 
 class Movement(Enum):
@@ -17,7 +18,7 @@ def clean_rows(screen: list) -> tuple[list, int]:
 	block_elem = lambda element: element == "🔳"
 	for row in screen:
 		if all(block_elem(item) for item in row):
-			screen_cleaned.insert(0, ["⬜️"] * 10)
+			screen_cleaned.insert(0, ["⬜️"] * BOARD_WIDTH)
 			completed_rows += 1
 		else:
 			screen_cleaned.append(row)
@@ -42,7 +43,7 @@ def block_piece(screen: list) -> list:
 def move_piece(
 	screen: list, aux_screen: list, movement: Movement, piece: Piece, score: int, stdscr
 ) -> tuple[list, Piece, int]:
-	new_screen = copy.deepcopy(aux_screen)
+	new_screen = [row[:] for row in aux_screen]
 	rotation_item = 0
 
 	for row_index, row in enumerate(screen):
@@ -71,7 +72,7 @@ def move_piece(
 						)
 						rotation_item += 1
 				if (
-					new_column_index > 9
+					new_column_index > BOARD_WIDTH - 1
 					or new_column_index < 0
 					or (
 						movement != Movement.DOWN
@@ -83,7 +84,7 @@ def move_piece(
 					movement == Movement.DOWN
 					and not piece.floor
 					and (
-						new_row_index > 9
+						new_row_index > BOARD_HEIGHT - 1
 						or aux_screen[new_row_index][new_column_index] == "🔳"
 					)
 				):
