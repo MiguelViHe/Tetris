@@ -1,14 +1,38 @@
 from typing import Any
 from persistence.repository.tetris_repository import TetrisRepository
 from src.speed import calc_speed
+from src.constants import BOARD_WIDTH as BW, BOARD_HEIGHT as BH
 
 def draw_screen(stdscr: Any, screen: Any, score: int) -> None:
 	stdscr.clear()  # limpia toda la pantalla
-	stdscr.addstr(0, 0, "Pantalla Tetris:\n")
+
+	# Tamaño de la terminal
+	max_y, max_x = stdscr.getmaxyx()
+	cell_width = 2  # el emoji ocupa 2 columnas
+	board_width = BW * cell_width
+	board_height = BH
+
+	if max_y < board_height + 6 or max_x < board_width + 20:
+		stdscr.addstr(0, 0, "La ventana es demasiado pequeña. Por favor, ajústala.")
+		stdscr.refresh()
+		return
+
+	y_offset = (max_y - board_height) // 2
+	x_offset = (max_x - board_width) // 2
+	
+	# Dibujar borde superior
+	stdscr.addstr(y_offset - 1, x_offset - 1, "┌" + "─" * board_width + "┐")
+
 	for i, row in enumerate(screen):
-		stdscr.addstr(i + 1, 0, "".join(row))
-	stdscr.addstr(len(screen) + 2, 0, f"Score = {score}")
-	stdscr.addstr(len(screen) + 3, 0, f"Speed = {calc_speed(score):.1f} seg")
+		line = "".join(row)
+		stdscr.addstr(y_offset + i, x_offset - 1, f"│{line}│")
+
+	# Dibujar borde inferior
+	stdscr.addstr(y_offset + board_height, x_offset - 1, "└" + "─" * board_width + "┘")
+
+	# Pintar la info debajo del tablero
+	stdscr.addstr(y_offset + BH + 1, x_offset, f"Score = {score}")
+	stdscr.addstr(y_offset + BH + 2, x_offset, f"Speed = {calc_speed(score):.1f} seg")
 	stdscr.refresh()  # refresca la pantalla para mostrar los cambios
 
 def print_scores_table(stdscr: Any) -> int:
