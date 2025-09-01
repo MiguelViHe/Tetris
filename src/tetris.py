@@ -18,15 +18,14 @@ def tetris_curses(stdscr):
 	game_over = False
 	screen = [["⬜️"] * BOARD_WIDTH for _ in range(BOARD_HEIGHT)]
 
-	last_drop_time = time.time()
 	while not game_over:
 		new_piece = Piece(random.randint(1, 7))
 		aux_screen = copy.deepcopy(screen)
 		(screen, new_piece) = print_piece(screen, new_piece)
 		if new_piece.floor:
 			game_over = True
-
 		draw_screen(stdscr, screen, score)
+		last_drop_time = time.time()
 		while not new_piece.floor:
 			key = stdscr.getch()
 			if key == ord('q'):  # salir con 'q'

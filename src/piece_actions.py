@@ -1,17 +1,9 @@
-from enum import Enum
-
 from src.pieces import Piece
 from src.printer import draw_screen
 from src.score import calculate_score
-from src.constants import BOARD_WIDTH, BOARD_HEIGHT
-import copy
+from src.checkers import movement_collides
+from src.constants import BOARD_WIDTH, BOARD_HEIGHT, Movement
 
-class Movement(Enum):
-	DOWN = 1
-	RIGHT = 2
-	LEFT = 3
-	ROTATE = 4
-	
 def clean_rows(screen: list) -> tuple[list, int]:
 	completed_rows = 0
 	screen_cleaned = []
@@ -40,46 +32,41 @@ def block_piece(screen: list) -> list:
 				screen[row_index][column_index] = "🔳"
 	return screen
 
+# Calcula la nueva posición de la pieza en función del movimiento y devuelve la nueva posición y el índice del cuadradito siguiente a rotar
+def calc_new_position(piece: Piece, movement: Movement, row_index: int, column_index: int, rotation_item: int) -> tuple[int, int, int]:
+	new_row_index = 0
+	new_column_index = 0
+	match movement:
+		case Movement.DOWN:
+			new_row_index = row_index + 1
+			new_column_index = column_index
+		case Movement.RIGHT:
+			new_row_index = row_index
+			new_column_index = column_index + 1
+		case Movement.LEFT:
+			new_row_index = row_index
+			new_column_index = column_index - 1
+		case Movement.ROTATE:
+			new_row_index = (
+				row_index + piece.rotations[piece.piece_position][rotation_item][0]
+			)
+			new_column_index = (
+				column_index + piece.rotations[piece.piece_position][rotation_item][1]
+			)
+	return (new_row_index, new_column_index, rotation_item + 1)
+
 def move_piece(
 	screen: list, aux_screen: list, movement: Movement, piece: Piece, score: int, stdscr
 ) -> tuple[list, Piece, int]:
 	new_screen = [row[:] for row in aux_screen]
-	rotation_item = 0
+	rotation_item = 0 #identifica que cuadradito de la pieza va a rotar (todas tienen 4)
 
 	for row_index, row in enumerate(screen):
 		for column_index, item in enumerate(row):
-			if item == piece.color:
-				new_row_index = 0
-				new_column_index = 0
-				match movement:
-					case Movement.DOWN:
-						new_row_index = row_index + 1
-						new_column_index = column_index
-					case Movement.RIGHT:
-						new_row_index = row_index
-						new_column_index = column_index + 1
-					case Movement.LEFT:
-						new_row_index = row_index
-						new_column_index = column_index - 1
-					case Movement.ROTATE:
-						new_row_index = (
-							row_index
-							+ piece.rotations[piece.piece_position][rotation_item][0]
-						)
-						new_column_index = (
-							column_index
-							+ piece.rotations[piece.piece_position][rotation_item][1]
-						)
-						rotation_item += 1
-				if (
-					new_column_index > BOARD_WIDTH - 1
-					or new_column_index < 0
-					or (
-						movement != Movement.DOWN
-						and aux_screen[new_row_index][new_column_index] == "🔳"
-					)
-				):
-					return (screen, piece, score)
+			if item == piece.color: # verifica si el elemento es parte de la pieza o del fondo
+				new_row_index, new_column_index, rotation_item = calc_new_position(piece, movement, row_index, column_index, rotation_item)
+				if movement_collides(aux_screen, movement, new_row_index, new_column_index):
+					return (screen, piece, score) # devuelve la pantalla, la pieza y la puntuación actual tal cual, ya he ha habido colisión y no se puede hacer el movimiento.
 				elif (
 					movement == Movement.DOWN
 					and not piece.floor
