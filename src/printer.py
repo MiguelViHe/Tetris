@@ -1,7 +1,24 @@
 from typing import Any
 from persistence.repository.tetris_repository import TetrisRepository
 from src.speed import calc_speed
-from src.constants import BOARD_WIDTH as BW, BOARD_HEIGHT as BH
+from src.constants import BOARD_WIDTH as BW, BOARD_HEIGHT as BH, LOGO
+
+def draw_logo_above_board(stdscr: Any, logo: list[list[str]], board_y: int, board_width: int, max_x: int) -> None:
+	"""Dibuja el logo centrado horizontalmente, encima del tablero."""
+	cell_width = 2  # cada emoji ocupa 2 columnas
+
+	logo_height = len(logo)
+	logo_width = len(logo[0]) * cell_width
+
+	# Centrado horizontal
+	x_offset = (max_x - logo_width) // 2
+	# Posición vertical: justo encima del tablero con una línea en blanco
+	y_offset = board_y - logo_height - 1
+
+	for i, row in enumerate(logo):
+		line = "".join(row)
+		stdscr.addstr(y_offset + i, x_offset, line)
+
 
 def draw_screen(stdscr: Any, screen: Any, score: int) -> None:
 	stdscr.clear()  # limpia toda la pantalla
@@ -19,6 +36,8 @@ def draw_screen(stdscr: Any, screen: Any, score: int) -> None:
 
 	y_offset = (max_y - board_height) // 2
 	x_offset = (max_x - board_width) // 2
+
+	draw_logo_above_board(stdscr, LOGO, y_offset, board_width, max_x)
 	
 	# Dibujar borde superior
 	stdscr.addstr(y_offset - 1, x_offset - 1, "┌" + "─" * board_width + "┐")
@@ -50,3 +69,4 @@ def print_scores_table(stdscr: Any) -> int:
 	stdscr.addstr(len(scores) + 1, 0, "--------------------")
 	stdscr.refresh()
 	return len(scores) + 2  # devuelve la cantidad de líneas impresas
+

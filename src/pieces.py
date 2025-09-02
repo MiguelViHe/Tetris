@@ -1,4 +1,5 @@
 class Piece:
+
 	def __init__(self, piece_index: int):
 		match piece_index:
 			case 1:
