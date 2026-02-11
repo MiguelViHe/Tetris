@@ -10,12 +10,11 @@ Una implementación completa del clásico juego **Tetris** desarrollada en Pytho
 - [Instalación](#instalación)
 - [Uso](#uso)
 - [Controles](#controles)
-- [Estructura del Proyecto](#estructura-del-proyecto)
 - [Mecánicas del Juego](#mecánicas-del-juego)
+- [Estructura del Proyecto](#estructura-del-proyecto)
 - [Tecnologías](#tecnologías)
-- [Contribuciones](#contribuciones)
-- [Licencia](#licencia)
 - [Autor](#autor)
+- [Soporte](#soporte)
 
 ---
 
@@ -102,49 +101,6 @@ El juego se iniciará en tu terminal. Asegúrate de que tu ventana de terminal s
 | Salir del Juego  | q                    |
 
 
-## Mecánicas
-- Caída Automática: Las piezas caen automáticamente según la velocidad actual (comienza en 1.0s y disminuye)
-- Detección Automática de Game Over: El juego termina cuando una pieza nueva no puede colocarse en la parte superior del tablero
-- Eliminación de Filas: Cuando completas una fila horizontal, se elimina y las filas superiores caen
-- Puntuación: Ganas puntos según el número de filas eliminadas en un movimiento
-
-## 📁 Estructura del Proyecto
-```Code
-Tetris/
-├── src/
-│   ├── __init__.py           # Inicializador del paquete
-│   ├── tetris.py             # Función principal del juego
-│   ├── pieces.py             # Definición de piezas (Tetrominós)
-│   ├── piece_actions.py      # Lógica de movimiento y rotación
-│   ├── checkers.py           # Detección de colisiones
-│   ├── constants.py          # Constantes y enumeraciones
-│   ├── printer.py            # Renderizado en consola
-│   ├── gameover.py           # Pantalla de game over
-│   ├── score.py              # Lógica de puntuación
-│   └── speed.py              # Cálculo de velocidad
-├── persistence/
-│   └── repository/           # Gestión de persistencia (BD)
-├── data/                     # Almacenamiento de datos
-├── requirements.txt          # Dependencias del proyecto
-├── .gitignore                # Archivos ignorados por Git
-├── .python-version           # Versión recomendada de Python
-└── README.md                 # Este archivo
-```
-
-## Archivos Principales
-| Archivo               | Descripción                                                   |
-|------------------------|---------------------------------------------------------------|
-| src/tetris.py          | Punto de entrada del juego y bucle principal                 |
-| src/pieces.py          | Definición de las 7 piezas Tetris con sus rotaciones         |
-| src/piece_actions.py   | Movimiento, rotación, bloqueo y eliminación de filas         |
-| src/checkers.py        | Validación de colisiones y límites del tablero               |
-| src/constants.py       | Dimensiones del tablero, velocidad inicial, logo             |
-| src/printer.py         | Renderizado visual del juego en consola                      |
-| src/gameover.py        | Interfaz de fin de juego y captura de nombre                 |
-| src/score.py           | Cálculo y almacenamiento de puntuaciones                     |
-| src/speed.py           | Función para aumentar la velocidad con los puntos            |
-
-
 ## 🎲 Mecánicas del Juego
 Sistema de Piezas
 Las 7 piezas Tetris estándar (Tetrominós):
@@ -177,6 +133,49 @@ El juego valida:
 - Bloqueo en el suelo
 - Colisión con piezas anteriores
 - Rotaciones válidas
+
+El juego implementa:
+
+- Caída Automática: Las piezas caen automáticamente según la velocidad actual (comienza en 1.0s y disminuye)
+- Detección Automática de Game Over: El juego termina cuando una pieza nueva no puede colocarse en la parte superior del tablero
+- Eliminación de Filas: Cuando completas una fila horizontal, se elimina y las filas superiores caen
+- Puntuación: Ganas puntos según el número de filas eliminadas en un movimiento
+
+## 📁 Estructura del Proyecto
+```Code
+Tetris/
+├── src/
+│   ├── __init__.py           # Inicializador del paquete
+│   ├── tetris.py             # Función principal del juego
+│   ├── pieces.py             # Definición de piezas (Tetrominós)
+│   ├── piece_actions.py      # Lógica de movimiento y rotación
+│   ├── checkers.py           # Detección de colisiones
+│   ├── constants.py          # Constantes y enumeraciones
+│   ├── printer.py            # Renderizado en consola
+│   ├── gameover.py           # Pantalla de game over
+│   ├── score.py              # Lógica de puntuación
+│   └── speed.py              # Cálculo de velocidad
+├── persistence/
+│   └── repository/           # Gestión de persistencia (BD)
+├── data/                     # Almacenamiento de datos
+├── requirements.txt          # Dependencias del proyecto
+├── .gitignore                # Archivos ignorados por Git
+├── .python-version           # Versión recomendada de Python
+└── README.md                 # Este archivo
+```
+
+Archivos Principales
+| Archivo               | Descripción                                                   |
+|------------------------|---------------------------------------------------------------|
+| src/tetris.py          | Punto de entrada del juego y bucle principal                 |
+| src/pieces.py          | Definición de las 7 piezas Tetris con sus rotaciones         |
+| src/piece_actions.py   | Movimiento, rotación, bloqueo y eliminación de filas         |
+| src/checkers.py        | Validación de colisiones y límites del tablero               |
+| src/constants.py       | Dimensiones del tablero, velocidad inicial, logo             |
+| src/printer.py         | Renderizado visual del juego en consola                      |
+| src/gameover.py        | Interfaz de fin de juego y captura de nombre                 |
+| src/score.py           | Cálculo y almacenamiento de puntuaciones                     |
+| src/speed.py           | Función para aumentar la velocidad con los puntos            |
 
 ## 🛠️ Tecnologías
 - Lenguaje: Python 3.8+
